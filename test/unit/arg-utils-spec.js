@@ -8,15 +8,11 @@ _chai.use(require('chai-as-promised'));
 const expect = _chai.expect;
 
 const _path = require('path');
-const _fsHelper = require('wysknd-test').fs;
 const _testValueProvider = require('wysknd-test').testValueProvider;
 const _rewire = require('rewire');
 let _argUtils = null;
 
 describe('[argUtils]', () => {
-    const TMP_DIR = _path.resolve('.tmp');
-    const _filesToCleanup = [];
-    const DEFAULT_SCHEMA_PATH = _path.resolve(TMP_DIR, 'sample-schema');
     const DEFAULT_SCHEMA_OBJECT = {};
     let _ajvMock = null;
     let _ajvObj = null;
@@ -38,31 +34,9 @@ describe('[argUtils]', () => {
         _argUtils.__set__('_ajv', _ajvMock);
     });
 
-    beforeEach(() => {
-        _fsHelper.createFolders(TMP_DIR);
-    });
-
-    afterEach(() => {
-        if (_filesToCleanup.length > 0) {
-            _fsHelper.cleanupFiles(_filesToCleanup);
-        }
-        _fsHelper.cleanupFolders(TMP_DIR);
-
-        _filesToCleanup.splice(0);
-    });
-
     describe('buildSchemaChecker()', () => {
-        beforeEach(() => {
-            const filePath = DEFAULT_SCHEMA_PATH + '.json';
-            _fsHelper.createFiles({
-                path: filePath,
-                contents: JSON.stringify(DEFAULT_SCHEMA_OBJECT)
-            });
-            _filesToCleanup.push(filePath);
-        });
-
         it('should throw an error if invoked without a valid schema object', () => {
-            const values = _testValueProvider.allButSelected('string', 'object');
+            const values = _testValueProvider.allButObject();
             const error = 'Invalid schema specified (arg #1)';
 
             values.forEach((schema, index) => {
@@ -72,7 +46,6 @@ describe('[argUtils]', () => {
 
                 expect(wrapper).to.throw(error);
             });
-
         });
 
         it('should return a function when invoked with a valid schema object/path', () => {
@@ -92,18 +65,6 @@ describe('[argUtils]', () => {
             expect(_ajvMock).to.have.been.calledOnce;
             expect(_ajvObj.compile).to.have.been.calledOnce;
             expect(_ajvObj.compile).to.have.been.calledWith(schema);
-        });
-
-        it('should load and compile the schema from the specified schema file if a string is specified for the schema', () => {
-            const schema = DEFAULT_SCHEMA_PATH;
-            expect(_ajvMock).to.not.have.been.called;
-            expect(_ajvObj.compile).to.not.have.been.called;
-
-            const validator = _argUtils.buildSchemaChecker(schema);
-
-            expect(_ajvMock).to.have.been.calledOnce;
-            expect(_ajvObj.compile).to.have.been.calledOnce;
-            expect(_ajvObj.compile).to.have.been.calledWith(DEFAULT_SCHEMA_OBJECT);
         });
 
         describe('[schema validator behavior]', () => {
