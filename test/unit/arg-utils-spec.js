@@ -96,7 +96,7 @@ describe('[argUtils]', () => {
                     dataPath: 'foo',
                     message: 'bar'
                 };
-                const errMessage = `Schema validation failed. Details: [${schemaErr.dataPath}: ${schemaErr.message}]`;
+                const errMessage = `[SchemaError] Schema validation failed. Details: [${schemaErr.dataPath}: ${schemaErr.message}]`;
 
                 _ajvObj._schemaValidationResults = false;
                 _ajvObj._schemaValidator.errors = [schemaErr];
@@ -110,7 +110,7 @@ describe('[argUtils]', () => {
                 const schemaErr = {
                     message: 'bar'
                 };
-                const errMessage = `Schema validation failed. Details: [<root>: ${schemaErr.message}]`;
+                const errMessage = `[SchemaError] Schema validation failed. Details: [<root>: ${schemaErr.message}]`;
 
                 _ajvObj._schemaValidationResults = false;
                 _ajvObj._schemaValidator.errors = [schemaErr];
@@ -126,7 +126,7 @@ describe('[argUtils]', () => {
                     dataPath: 'foo',
                     message: 'bar'
                 };
-                const errMessage = `${customMessage}. Details: [${schemaErr.dataPath}: ${schemaErr.message}]`;
+                const errMessage = `[SchemaError] ${customMessage}. Details: [${schemaErr.dataPath}: ${schemaErr.message}]`;
 
                 _ajvObj._schemaValidationResults = false;
                 _ajvObj._schemaValidator.errors = [schemaErr];
